@@ -1,0 +1,76 @@
+# This file is part of libertine linux's package curl. It is subject to the license terms in the COPYRIGHT file found in the top-level directory of this distribution and at https://raw.githubusercontent.com/libertine-linux-packages/curl/master/COPYRIGHT. No part of libertine linux's package curl, including this file, may be copied, modified, propagated, or distributed except according to the terms contained in the COPYRIGHT file.
+# Copyright © 2016 The developers of libertine linux's package curl. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/libertine-linux-packages/curl/master/COPYRIGHT.
+
+
+variant=filesystem
+
+depends build_musl_cross_make_host
+build_needs "$libertine_host"-strip
+
+depends build_paxctl
+build_needs paxctl
+
+depends build_python_2_7
+build_needs python2.7
+
+depends build_go_1_7
+build_needs go-1.7 gofmt-1.7
+
+depends build_git
+build_needs git
+
+depends build_busybox
+
+depends build_musl_cross_make_host
+build_needs "$libertine_host"-cc "$libertine_host"-c++
+
+build_needs chmod
+libertine_compile_grafana()
+{
+	ln -s go-1.7 "$(libertine_public_buildNeedsPath)"/go
+	ln -s gofmt-1.7 "$(libertine_public_buildNeedsPath)"/gofmt
+	
+	#local outDirFolderPath="$(libertine_public_outputHostSysrootPath)"/usr/bin
+	#mkdir -m 0700 -p "$outDirFolderPath"
+	
+	pushd "$(libertine_public_packagePath)"/src/github.com/grafana/grafana
+		
+		# CGO_ENABLED=1 \
+		# CC="${libertine_host}-cc $(libertine_public_hostCCompilerFlags)" \
+		# CXX="${libertine_host}-c++ $(libertine_public_hostCxxCompilerFlags)" \
+		# GOPATH="$(libertine_public_packagePath)" \
+		# GOHOSTOS="$libertine_buildOperatingSystem" \
+		# GOHOSTARCH="$libertine_buildGoogleGoArch" \
+		# GOOS="$libertine_hostOperatingSystem" \
+		# GOARCH="$libertine_hostGoogleGoArch" \
+		# GOARM="$libertine_hostGoogleGoArch386Variant" \
+		# GO386="$libertine_hostGoogleGoArch386Variant" \
+		# 	go run -v build.go setup
+		
+		
+		# sqlite driver does not link due to PIC issue; someone, somewhere is adding a -fPIC
+		CGO_ENABLED=0 \
+		CC="${libertine_host}-cc $(libertine_public_hostCCompilerFlags)" \
+		CXX="${libertine_host}-c++ $(libertine_public_hostCxxCompilerFlags)" \
+		GOPATH="$(libertine_public_packagePath)" \
+		GOHOSTOS="$libertine_buildOperatingSystem" \
+		GOHOSTARCH="$libertine_buildGoogleGoArch" \
+		GOOS="$libertine_hostOperatingSystem" \
+		GOARCH="$libertine_hostGoogleGoArch" \
+		GOARM="$libertine_hostGoogleGoArch386Variant" \
+		GO386="$libertine_hostGoogleGoArch386Variant" \
+			go run -v build.go build
+				
+	popd
+	
+	libertine_public_copy_filesystem "$(libertine_public_sourcePath)"/ "$(libertine_public_outputInitramfsPath)"/
+
+	local destinationFolderPath="$(libertine_public_outputInitramfsPath)"/usr/sbin
+	local binary
+	for binary in grafana-cli grafana-server
+	do
+		cp "$(libertine_public_packagePath)"/src/github.com/grafana/grafana/bin/"$binary" "$destinationFolderPath"
+		libertine_public_stripAndSecureBinary "$destinationFolderPath"/"$binary"
+		chmod 0700 "$destinationFolderPath"/"$binary"
+	done
+}
