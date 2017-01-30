@@ -1,0 +1,7 @@
+# Writable by grafana only
+dir /var/log/grafana 0700 101 0
+# Accessible but not modifiable by grafana user
+dir /etc/grafana 0500 101 0
+file /etc/grafana/config.ini initramfs/etc/grafana/config.ini 0400 101 0
+file /etc/grafana/ldap.toml initramfs/etc/grafana/ldap.toml 0400 101 0
+dir /var/lib/grafana 0500 101 0

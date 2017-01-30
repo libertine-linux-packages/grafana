@@ -7,14 +7,14 @@
 	url = https://github.com/kardianos/govendor.git
 	branch = master
 [submodule "filesystem/var/lib/grafana/plugins/clock-panel"]
-	path = filesystem/var/lib/grafana/plugins/clock-panel
+	path = filesystem/etc/grafana/plugins/clock-panel
 	url = https://github.com/grafana/clock-panel.git
 	branch = master
 [submodule "filesystem/var/lib/grafana/plugins/worldmap-panel"]
-	path = filesystem/var/lib/grafana/plugins/worldmap-panel
+	path = filesystem/etc/grafana/plugins/worldmap-panel
 	url = https://github.com/grafana/worldmap-panel.git
 	branch = master
 [submodule "filesystem/var/lib/grafana/plugins/piechart-panel"]
-	path = filesystem/var/lib/grafana/plugins/piechart-panel
+	path = filesystem/etc/grafana/plugins/piechart-panel
 	url = https://github.com/grafana/piechart-panel.git
 	branch = master

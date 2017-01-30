@@ -1,0 +1,68 @@
+# This file is part of libertine linux's package busybox. It is subject to the licence terms in the COPYRIGHT file found in the top-level directory of this distribution and at https://raw.githubusercontent.com/libertine-linux-packages/busybox/master/COPYRIGHT. No part of libertine linux's package busybox, including this file, may be copied, modified, propagated, or distributed except according to the terms contained in the COPYRIGHT file.
+# Copyright © 2016 The developers of libertine linux's package busybox. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/libertine-linux-packages/busybox/master/COPYRIGHT.
+
+
+init_grafana_start()
+{
+	if [ -f "$pidFilePath" ]; then
+		return 0
+	fi
+	
+	if command -v grafana 1>/dev/null 2>/dev/null; then
+		
+		if command -v rm 1>/dev/null 2>/dev/null; then
+			rm -rf "$tmpFolderLocation"
+		fi
+		
+		if command -v mkdir 1>/dev/null 2>/dev/null; then
+			mkdir -m 0700 -p "$tmpFolderLocation"
+		fi
+		
+		if command -v chown 1>/dev/null 2>/dev/null; then
+			# -R in case rm (above) failed as not present on system
+			chown -R grafana:root "$tmpFolderLocation"
+		fi
+		
+		start-stop-daemon --start --quiet --exec grafana --chuid grafana:grafana --pidfile "$pidFilePath" -- --config '/etc/grafana/config.ini' --homepath '/etc/grafana' --pidfile "$pidFilePath"
+	fi
+}
+
+init_grafana_stop()
+{
+	if command -v grafana 1>/dev/null 2>/dev/null; then
+		if [ -s "$pidFilePath" ]; then
+			start-stop-daemon --stop --quiet --exec grafana --pidfile "$pidFilePath"
+		fi
+	fi
+	if command -v rm 1>/dev/null 2>/dev/null; then
+		rm -rf "$pidFilePath"
+		rm -rf "$tmpFolderLocation"
+	fi
+}
+
+init_grafana_main()
+{
+	if [ "$#" -eq 0 ]; then
+		local action='status'
+	else
+		local action="$1"
+		shift 1
+	fi
+	
+	local pidFilePath='/var/run/grafana.pid'		
+	local tmpFolderLocation='/var/tmp/grafana'
+	
+	case "$action" in
+		
+		start)
+			init_grafana_start "$@"
+		;;
+		
+		stop)
+			init_grafana_stop "$@"
+		;;
+		
+	esac
+}
+
+init_grafana_main "$@"

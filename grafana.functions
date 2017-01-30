@@ -16,25 +16,22 @@ build_needs python2.7
 depends build_go_1_7
 build_needs go-1.7 gofmt-1.7
 
-depends build_git
-build_needs git
+depends build_nodejs_6
+build_needs node npm
 
 depends build_busybox
 
 depends build_musl_cross_make_host
 build_needs "$libertine_host"-cc "$libertine_host"-c++
 
-build_needs chmod
+build_needs chmod find xargs cat
 libertine_compile_grafana()
 {
 	ln -s go-1.7 "$(libertine_public_buildNeedsPath)"/go
 	ln -s gofmt-1.7 "$(libertine_public_buildNeedsPath)"/gofmt
 	
-	#local outDirFolderPath="$(libertine_public_outputHostSysrootPath)"/usr/bin
-	#mkdir -m 0700 -p "$outDirFolderPath"
-	
 	pushd "$(libertine_public_packagePath)"/src/github.com/grafana/grafana
-		
+	
 		# CGO_ENABLED=1 \
 		# CC="${libertine_host}-cc $(libertine_public_hostCCompilerFlags)" \
 		# CXX="${libertine_host}-c++ $(libertine_public_hostCxxCompilerFlags)" \
@@ -49,6 +46,7 @@ libertine_compile_grafana()
 		
 		
 		# sqlite driver does not link due to PIC issue; someone, somewhere is adding a -fPIC
+		# we may need the sqlite support at a future point
 		CGO_ENABLED=0 \
 		CC="${libertine_host}-cc $(libertine_public_hostCCompilerFlags)" \
 		CXX="${libertine_host}-c++ $(libertine_public_hostCxxCompilerFlags)" \
@@ -60,7 +58,7 @@ libertine_compile_grafana()
 		GOARM="$libertine_hostGoogleGoArch386Variant" \
 		GO386="$libertine_hostGoogleGoArch386Variant" \
 			go run -v build.go build
-				
+		
 	popd
 	
 	libertine_public_copy_filesystem "$(libertine_public_sourcePath)"/ "$(libertine_public_outputInitramfsPath)"/
@@ -73,4 +71,31 @@ libertine_compile_grafana()
 		libertine_public_stripAndSecureBinary "$destinationFolderPath"/"$binary"
 		chmod 0700 "$destinationFolderPath"/"$binary"
 	done
+	
+	{
+		cat "$(libertine_public_packagePath)"/filesystem.initramfs.contents
+			
+		local folderName
+		for folderName in dashboards plugins
+		do
+			pushd "$(libertine_public_outputInitramfsPath)"/var/lib/grafana/"$folderName"
+			
+				local path
+				find . -mindepth 1 -type d | while IFS='.' read -r path
+				do
+					printf 'dir /var/lib/%s/%s 0500 101 0\n' "$folderName" "$path"
+				done
+				find . -mindepth 1 -type f | while IFS='.' read -r path
+				do
+					printf 'file /etc/%s/%s initramfs/etc/%s/%s 0400 101 0\n' "$folderName" "$path" "$folderName" "$path"
+				done
+			
+			popd
+		done
+	} >"$(libertine_public_outputInitramfsContentsFilePath)"
+	
+	# npm seems to be broken...	
+	npm install yarn
+	yarn install --pure-lockfile
+	npm run build
 }
