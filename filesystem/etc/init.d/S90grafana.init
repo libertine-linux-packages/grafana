@@ -23,7 +23,7 @@ init_grafana_start()
 			chown -R grafana:root "$tmpFolderLocation"
 		fi
 		
-		start-stop-daemon --start --quiet --exec grafana --chuid grafana:grafana --pidfile "$pidFilePath" -- --config '/etc/grafana/config.ini' --homepath '/etc/grafana' --pidfile "$pidFilePath"
+		start-stop-daemon --start --quiet --exec grafana --chuid grafana:grafana --pidfile "$pidFilePath" -- --config '/etc/grafana/defaults/config.ini' --homepath '/etc/grafana' --pidfile "$pidFilePath"
 	fi
 }
 

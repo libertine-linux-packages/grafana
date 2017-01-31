@@ -1,1 +1,1 @@
-/etc/grafana config.ini 0644 default
+/etc/grafana/conf config.ini 0644 default

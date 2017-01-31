@@ -19,32 +19,50 @@ build_needs go-1.7 gofmt-1.7
 depends build_nodejs_6
 build_needs node npm
 
+# Needed by yarn
+depends build_git
+build_needs git
+depends build_curl
+build_needs curl
+depends build_python_2_7
+build_needs python2
+depends gnumake
+build_needs make
+depends build_musl_cross_make_build
+build_needs "$libertine_build"-cc "$libertine_build"-c++ "$libertine_build"-ar
+build_needs printf dirname tar touch
+
 depends build_busybox
 
 depends build_musl_cross_make_host
 build_needs "$libertine_host"-cc "$libertine_host"-c++
 
-build_needs chmod find xargs cat
+build_needs ln rm chmod find xargs cat cp sed
 libertine_compile_grafana()
 {
 	ln -s go-1.7 "$(libertine_public_buildNeedsPath)"/go
 	ln -s gofmt-1.7 "$(libertine_public_buildNeedsPath)"/gofmt
 	
-	pushd "$(libertine_public_packagePath)"/src/github.com/grafana/grafana
+	local pathToYarn="$(libertine_public_packagePath)"/yarn/dist/bin/yarn.js
 	
-		# CGO_ENABLED=1 \
-		# CC="${libertine_host}-cc $(libertine_public_hostCCompilerFlags)" \
-		# CXX="${libertine_host}-c++ $(libertine_public_hostCxxCompilerFlags)" \
-		# GOPATH="$(libertine_public_packagePath)" \
-		# GOHOSTOS="$libertine_buildOperatingSystem" \
-		# GOHOSTARCH="$libertine_buildGoogleGoArch" \
-		# GOOS="$libertine_hostOperatingSystem" \
-		# GOARCH="$libertine_hostGoogleGoArch" \
-		# GOARM="$libertine_hostGoogleGoArch386Variant" \
-		# GO386="$libertine_hostGoogleGoArch386Variant" \
-		# 	go run -v build.go setup
+	# Problems with yarn
+	rm -rf "$(libertine_public_packagePath)"/.git
+	
+	pushd "$(libertine_public_packagePath)"/src/github.com/grafana/grafana
 		
+		# Problems with yarn
+		rm -rf .git
 		
+		# Problems with node-gyp, an official node tool that doesn't understand cross-compiling and assumes GNU g++...
+		ln -s "$libertine_build"-c++ "$(libertine_public_buildNeedsPath)"/g++
+		ln -s "$libertine_build"-cc "$(libertine_public_buildNeedsPath)"/cc
+		ln -s "$libertine_build"-ar "$(libertine_public_buildNeedsPath)"/ar
+		node "$pathToYarn" install --pure-lockfile
+		rm "$(libertine_public_buildNeedsPath)"/g++ "$(libertine_public_buildNeedsPath)"/cc  "$(libertine_public_buildNeedsPath)"/ar
+		
+		# Now can actually build
+		npm run build
+	
 		# sqlite driver does not link due to PIC issue; someone, somewhere is adding a -fPIC
 		# we may need the sqlite support at a future point
 		CGO_ENABLED=0 \
@@ -72,13 +90,15 @@ libertine_compile_grafana()
 		chmod 0700 "$destinationFolderPath"/"$binary"
 	done
 	
+	cp "$(libertine_public_packagePath)"/src/github.com/grafana/grafana/conf/defaults.ini "$(libertine_public_outputInitramfsPath)"/etc/grafana/conf
+	
 	{
 		cat "$(libertine_public_packagePath)"/filesystem.initramfs.contents
 			
 		local folderName
-		for folderName in dashboards plugins
+		for folderName in dashboards plugins public
 		do
-			pushd "$(libertine_public_outputInitramfsPath)"/var/lib/grafana/"$folderName"
+			pushd "$(libertine_public_outputInitramfsPath)"/etc/grafana/"$folderName"
 			
 				local path
 				find . -mindepth 1 -type d | while IFS='.' read -r path
@@ -93,9 +113,4 @@ libertine_compile_grafana()
 			popd
 		done
 	} >"$(libertine_public_outputInitramfsContentsFilePath)"
-	
-	# npm seems to be broken...	
-	npm install yarn
-	yarn install --pure-lockfile
-	npm run build
 }
