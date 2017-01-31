@@ -37,7 +37,7 @@ depends build_busybox
 depends build_musl_cross_make_host
 build_needs "$libertine_host"-cc "$libertine_host"-c++
 
-build_needs ln rm chmod find xargs cat cp sed
+build_needs ln rm chmod find xargs cat cp sed mv
 libertine_compile_grafana()
 {
 	ln -s go-1.7 "$(libertine_public_buildNeedsPath)"/go
@@ -92,9 +92,11 @@ libertine_compile_grafana()
 	
 	cp "$(libertine_public_packagePath)"/src/github.com/grafana/grafana/conf/defaults.ini "$(libertine_public_outputInitramfsPath)"/etc/grafana/conf
 	
+	mv "$(libertine_public_packagePath)"/src/github.com/grafana/grafana/public_gen "$(libertine_public_outputInitramfsPath)"/etc/grafana/public
+	
 	{
 		cat "$(libertine_public_packagePath)"/filesystem.initramfs.contents
-			
+		
 		local folderName
 		for folderName in dashboards plugins public
 		do
