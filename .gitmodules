@@ -1,20 +1,25 @@
 [submodule "src/github.com/grafana/grafana"]
 	path = src/github.com/grafana/grafana
-	url = https://github.com/grafana/grafana.git
+	url = https://github.com/libertine-linux-clones/src/github.com/grafana/grafana.git
 	branch = master
+	libertine-linux-upstream = https://github.com/grafana/grafana.git
 [submodule "src/github.com/kardianos/govendor"]
 	path = src/github.com/kardianos/govendor
-	url = https://github.com/kardianos/govendor.git
+	url = https://github.com/libertine-linux-clones/src/github.com/kardianos/govendor.git
 	branch = master
+	libertine-linux-upstream = https://github.com/kardianos/govendor.git
 [submodule "filesystem/var/lib/grafana/plugins/clock-panel"]
 	path = filesystem/etc/grafana/plugins/clock-panel
-	url = https://github.com/grafana/clock-panel.git
+	url = https://github.com/libertine-linux-clones/filesystem/var/lib/grafana/plugins/clock-panel.git
 	branch = master
+	libertine-linux-upstream = https://github.com/grafana/clock-panel.git
 [submodule "filesystem/var/lib/grafana/plugins/worldmap-panel"]
 	path = filesystem/etc/grafana/plugins/worldmap-panel
-	url = https://github.com/grafana/worldmap-panel.git
+	url = https://github.com/libertine-linux-clones/filesystem/var/lib/grafana/plugins/worldmap-panel.git
 	branch = master
+	libertine-linux-upstream = https://github.com/grafana/worldmap-panel.git
 [submodule "filesystem/var/lib/grafana/plugins/piechart-panel"]
 	path = filesystem/etc/grafana/plugins/piechart-panel
-	url = https://github.com/grafana/piechart-panel.git
+	url = https://github.com/libertine-linux-clones/filesystem/var/lib/grafana/plugins/piechart-panel.git
 	branch = master
+	libertine-linux-upstream = https://github.com/grafana/piechart-panel.git
