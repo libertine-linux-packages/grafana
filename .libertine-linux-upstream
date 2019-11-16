@@ -1,0 +1,5 @@
+src/github.com/grafana/grafana	https://github.com/grafana/grafana.git
+src/github.com/kardianos/govendor	https://github.com/kardianos/govendor.git
+filesystem/var/lib/grafana/plugins/clock-panel	https://github.com/grafana/clock-panel.git
+filesystem/var/lib/grafana/plugins/worldmap-panel	https://github.com/grafana/worldmap-panel.git
+filesystem/var/lib/grafana/plugins/piechart-panel	https://github.com/grafana/piechart-panel.git
