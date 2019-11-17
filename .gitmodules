@@ -10,6 +10,10 @@
 	path = filesystem/etc/grafana/plugins/clock-panel
 	url = https://github.com/libertine-linux-clones/filesystem/var/lib/grafana/plugins/clock-panel.git
 	branch = master
+	update = checkout
+	ignore = none
+	fetchRecurseSubmodules = true
+	shallow = true
 [submodule "filesystem/var/lib/grafana/plugins/worldmap-panel"]
 	path = filesystem/etc/grafana/plugins/worldmap-panel
 	url = https://github.com/libertine-linux-clones/filesystem/var/lib/grafana/plugins/worldmap-panel.git
