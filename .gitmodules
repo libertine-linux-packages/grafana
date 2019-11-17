@@ -5,7 +5,7 @@
 	update = checkout
 	ignore = none
 	fetchRecurseSubmodules = true
-	shallow = true
+	shallow = false
 [submodule "src/github.com/kardianos/govendor"]
 	path = src/github.com/kardianos/govendor
 	url = https://github.com/libertine-linux-clones/govendor.git
@@ -13,7 +13,7 @@
 	update = checkout
 	ignore = none
 	fetchRecurseSubmodules = true
-	shallow = true
+	shallow = false
 [submodule "filesystem/var/lib/grafana/plugins/clock-panel"]
 	path = filesystem/etc/grafana/plugins/clock-panel
 	url = https://github.com/libertine-linux-clones/grafana-clock-panel.git
@@ -21,7 +21,7 @@
 	update = checkout
 	ignore = none
 	fetchRecurseSubmodules = true
-	shallow = true
+	shallow = false
 [submodule "filesystem/var/lib/grafana/plugins/worldmap-panel"]
 	path = filesystem/etc/grafana/plugins/worldmap-panel
 	url = https://github.com/libertine-linux-clones/grafana-worldmap-panel.git
@@ -29,7 +29,7 @@
 	update = checkout
 	ignore = none
 	fetchRecurseSubmodules = true
-	shallow = true
+	shallow = false
 [submodule "filesystem/var/lib/grafana/plugins/piechart-panel"]
 	path = filesystem/etc/grafana/plugins/piechart-panel
 	url = https://github.com/libertine-linux-clones/grafana-piechart-panel.git
@@ -37,4 +37,4 @@
 	update = checkout
 	ignore = none
 	fetchRecurseSubmodules = true
-	shallow = true
+	shallow = false
